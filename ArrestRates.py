@@ -8,6 +8,8 @@ import pandas as pd
 from pandas import Series,DataFrame
 import numpy as np
 import matplotlib.pyplot as plt
+
+
 Crime = pd.read_csv("Crime.csv")
 #Arrest Rates By District
 ArrestDistrict = pd.pivot_table(Crime[["ID","District","Arrest","Year"]],index = ['District','Year'],columns = ['Arrest'],aggfunc = np.count_nonzero)
@@ -19,10 +21,9 @@ ArrestDistrict["Total Crime"] = ArrestDistrict["Arrest True"] + ArrestDistrict["
 
 ArrestDistrict = ArrestDistrict[ArrestDistrict["Year"] != 2017]
 
-
 ##problem change num plots depending on AnalysisDistricts length
-AnalysisDistricts = [1,6,5,3]
-InterestThreshold = .15
+AnalysisDistricts = [8,11,15]
+InterestThreshold = 0
 ArrestDistrict = ArrestDistrict[ArrestDistrict["District"].isin(AnalysisDistricts)]
 fig, axarr = plt.subplots(len(AnalysisDistricts),sharex = True,sharey = True)
 plt.tight_layout()
@@ -42,12 +43,23 @@ plt.show()
 
 
 #Look at the top crimes for each year of District
+CrimeDfs = []
 for idx,yearDistrict in enumerate(yearList):
     releventCrime = Crime[Crime["District"] == AnalysisDistricts[idx] & Crime["Year"].isin(yearList[idx])]
     pivot = pd.pivot_table(releventCrime[["ID","Year","Primary Type"]],index = ['Year'],columns = ['Primary Type'], aggfunc = np.count_nonzero)
     pivot = pd.DataFrame(pivot.to_records())
-
-    
-    
+    colList = []
+    for i in range(len(pivot.columns)):
+        if i == 0:
+            colList.append(pivot.columns[i])
+        else:
+            colList.append(pivot.columns[i].split("'")[3])
+    pivot.columns = colList
+    pivot["sum"] = pivot.loc[:,"ASSAULT":"THEFT"].sum(axis = 1)
+    pivot = pivot.loc[:,"ASSAULT":"THEFT"].div(pivot["sum"],axis = 0)
+    if not pivot.empty:
+        pivot.index = yearList[idx]
+    #build plots
+    CrimeDfs.append([AnalysisDistricts[idx],pivot])
     
     
