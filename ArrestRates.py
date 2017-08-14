@@ -22,7 +22,7 @@ ArrestDistrict["Total Crime"] = ArrestDistrict["Arrest True"] + ArrestDistrict["
 ArrestDistrict = ArrestDistrict[ArrestDistrict["Year"] != 2017]
 
 ##problem change num plots depending on AnalysisDistricts length
-AnalysisDistricts = [8,11,15]
+AnalysisDistricts = [8,11,25]
 InterestThreshold = 0
 ArrestDistrict = ArrestDistrict[ArrestDistrict["District"].isin(AnalysisDistricts)]
 fig, axarr = plt.subplots(len(AnalysisDistricts),sharex = True,sharey = True)
